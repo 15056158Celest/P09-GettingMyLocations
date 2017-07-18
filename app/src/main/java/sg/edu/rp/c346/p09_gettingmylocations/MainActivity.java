@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient mGoogleApiClient;
     private Location mLocation;
     String folderLocation;
+    private GoogleMap map;
+
 
 
 
@@ -38,6 +50,47 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        FragmentManager fm = getSupportFragmentManager();
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(new OnMapReadyCallback(){
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+
+                LatLng poi_RP = new LatLng(1.443556, 103.785733);
+                Marker rp = map.addMarker(new
+                        MarkerOptions()
+                        .position(poi_RP)
+                        .title("Republic Polytechnic")
+                        .snippet("C347 Android Programming II")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+
+
+
+
+                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+                if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
+                    map.setMyLocationEnabled(true);
+                } else {
+                    Log.e("GMap - Permission", "GPS access has not been granted");
+                }
+
+                UiSettings ui = map.getUiSettings();
+                ui.setCompassEnabled(true);
+                ui.setZoomControlsEnabled(true);
+
+
+            }
+
+
+        });
+
+
 
         folderLocation = Environment.getExternalStorageDirectory().getAbsolutePath() + "/P09";
 
